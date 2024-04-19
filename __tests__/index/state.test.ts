@@ -2,16 +2,16 @@
 import Sarus from "../../src/index";
 import { WS } from "jest-websocket-mock";
 import { delay } from "../helpers/delay";
-
-const url: string = "ws://localhost:1234";
-const sarusConfig = {
-  url,
-  retryConnectionDelay: 1,
-};
+import { newWsMock } from "../helpers/websocket";
 
 describe("state machine", () => {
   it("cycles through a closed connection correctly", async () => {
-    let server: WS = new WS(url);
+    let { server, url } = newWsMock();
+
+    const sarusConfig = {
+      url,
+      retryConnectionDelay: 1,
+    };
 
     // In the beginning, the state is "connecting"
     const sarus: Sarus = new Sarus(sarusConfig);
@@ -42,7 +42,12 @@ describe("state machine", () => {
   });
 
   it("cycles through disconnect() correctly", async () => {
-    let server: WS = new WS(url);
+    let { server, url } = newWsMock();
+
+    const sarusConfig = {
+      url,
+      retryConnectionDelay: 1,
+    };
 
     // Same initial state transition as above
     const sarus: Sarus = new Sarus(sarusConfig);
@@ -65,6 +70,7 @@ describe("state machine", () => {
     expect(sarus.state).toBe("connected");
     server.close();
   });
+
   it("never enters a connected state without an open WS mock", async () => {
     const server: WS = new WS(url);
     server.close();

@@ -6,5 +6,8 @@ module.exports = {
 	transform: {
 		'//.(ts|tsx)$': 'ts-jest',
 	},
-	testPathIgnorePatterns: ['/__tests__/helpers/delay.ts'],
+	testPathIgnorePatterns: [
+		'/__tests__/helpers/delay.ts',
+		'/__tests__/helpers/websocket.ts',
+	],
 };
