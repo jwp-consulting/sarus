@@ -65,4 +65,25 @@ describe("state machine", () => {
     expect(sarus.state).toBe("connected");
     server.close();
   });
+  it("never enters a connected state without an open WS mock", async () => {
+    const server: WS = new WS(url);
+    server.close();
+    // Using this "opened" variable, we try to catch Sarus entering an open
+    // state intermittently. Just using delay(n) to try to "catch" it thinking
+    // that it's connected might not work since we can't time the test execution
+    // precisely enough and it might already have transition from connected ->
+    // closed -> connecting again.
+    let opened = false;
+    // We create a new Sarus
+    const sarus: Sarus = new Sarus({
+      ...sarusConfig,
+      eventListeners: {
+        open: [() => {opened = true;}],
+      }
+    });
+    expect(opened).toBe(false);
+    await delay(100);
+    // Whoosh, we have connected to /something/, without creating a WS mock
+    expect(opened).toBe(true);
+  });
 });
